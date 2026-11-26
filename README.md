@@ -1,81 +1,61 @@
 # Don't Pick On Me
 
-A standalone page that runs `DontPickOnMe.riv` with Rive's official JavaScript runtime and looks like a project page on [devjoshi.co.uk](https://devjoshi.co.uk/): same header, type, spacing and footer. Plain HTML/CSS/JS, no build step, no framework.
+A standalone page that plays `DontPickOnMe.riv` with Rive's official JavaScript runtime, styled like a project page on [devjoshi.co.uk](https://devjoshi.co.uk/): same header, type, spacing and footer. Plain HTML, CSS and JS with no build step.
 
-Target address: `interactive.devjoshi.co.uk`. For now it is served from GitHub Pages at the `github.io` project URL (see below).
+Target address: `interactive.devjoshi.co.uk`. Until then it runs from GitHub Pages at https://botsmcwibe.github.io/devjoshi-interactive/.
 
 ## Files
 
 ```
-index.html            page: header, hero, mocked-up description, footer
-style.css             styles (written from scratch to match the Portfolio, see notes below)
-main.js               header/menu behaviour + Rive canvases
-favicon.svg
+index.html            header, hero, description, animation row, footer
+style.css
+main.js               menu, scroll shadow and the Rive canvases
+favicon.png           copied from devjoshi.co.uk
 assets/DontPickOnMe.riv
-assets/fonts/FuturaPT-Medium.woff2
-.nojekyll
+assets/fonts/         Jost 400 / 500 / 700 (woff2) and its OFL licence
 ```
 
-All paths are relative, so the site works from `/` or from a subpath such as `/devjoshi-interactive/`.
+All paths are relative, so the site works from `/` or from a subpath like `/devjoshi-interactive/`.
 
 ## Local preview
 
-The runtime can't load the `.riv` from `file://`; serve the folder over HTTP:
+The `.riv` can't load from `file://`, so serve the folder:
 
 ```bash
-npx serve .
-# or
 python3 -m http.server 8080
 ```
 
-## Page layout
+## Page
 
-- **Header**: Work / About on the left, "Dev Joshi" wordmark in the centre, LinkedIn / Instagram on the right; hamburger + full-screen menu at ≤932px. Links go to the real `devjoshi.co.uk` URLs.
-- **Hero**: the full `PLAY` artboard (1080×1080, square), centred and capped to the viewport height. Hover and click the mushrooms. The file starts with a ~2s Rive watermark intro (a free-plan export); this is part of the `PLAY` artboard.
-- **Description** (**PLACEHOLDER TEXT**, see below) with small live Rive canvases between the paragraphs, in the same grid style the site uses for image groups.
-- **Footer**: empty, same height as the site's.
+- **Header**: Work and About on the left, "Dev Joshi" centred, LinkedIn and Instagram on the right (icons copied from the main site). At 932px and below it becomes a hamburger with a full-screen menu. Links point to the real devjoshi.co.uk pages. The tab title is `Dev Joshi - Don't Pick On Me`, like the main site's project pages.
+- **Hero**: the `PLAY` artboard in a 2:1 band on desktop (the scene is cropped in with CSS and the band uses the artboard's own green `#59E477`, so it is seamless) and square on mobile. The file starts with a short Rive watermark intro, which comes from the free-plan export.
+- **Description**: two columns on desktop, with the text on the left (700px) and one live Shroomie on the right. On mobile the Shroomie sits under the text.
+- **Row of three**: Shromp playing `PUSH 1 (Nudge)`, `PUSH 2 (Bald)` and `PUSH 3 (Cry)` in a loop.
 
-### Small canvases (all from the same `.riv`, one shared download)
+All canvases share a single download of the `.riv`, start when they scroll near the viewport and pause when they leave it.
 
-| Where | Artboard | How it's rendered |
-|---|---|---|
-| Grid 1, cell 1 | `Shromp` | animation `Shromp PUSH 1 (Nudge)`, looping |
-| Grid 1, cell 2 | `Shromp` | animation `Shromp PUSH 2 (Bald)`, looping |
-| Grid 1, cell 3 | `Shromp` | animation `Shromp PUSH 3 (Cry)`, looping |
-| Grid 2, cells 1–3 | `Shroomie` | animations `Shroomie IDLE` → `HOVER` on mouse-over → `DEATH` then `REGROW` on click; body/cap colours set at runtime through the file's view model (`bodyColor`, `capColour`) |
-
-Notes: other animations in the file that aren't used yet are `Shromp IDLE`, `Shromp HOVER` and `Shromp PUSH 3 (Worm)`. The artboards' own state machines are not used for the small canvases because they replay the watermark intro; the hero uses `PLAY`'s state machine. Canvases start when they scroll near the viewport and pause when they leave it. They use the deprecated-but-supported linear-animation playback of the pinned runtime (`@rive-app/canvas@2.55.1`), with its console warnings suppressed in `main.js`.
+The small canvases play the linear animations (`Shromp PUSH ...`, `Shroomie IDLE / HOVER / DEATH / REGROW`) rather than each artboard's state machine, because the state machines replay the Rive watermark intro on every canvas. The Shroomie's hover and click are handled in `main.js`, and its colours come from the file's view model (`bodyColor`, `capColour`). The pinned runtime (`@rive-app/canvas@2.55.1`) still supports linear animations; its deprecation warnings are switched off in `main.js`.
 
 ## Placeholder content
 
-The title, subtitle, paragraphs and credits in `index.html` are **invented placeholder text** (there is also an HTML comment saying so). Replace them before launch. The `.title`, `.subtitle`, plain `<p>` and `.gap` credits line map to the Portfolio's text styles.
+The title, subtitle, both paragraphs and the credits line in `index.html` are **placeholder text I invented**. Replace them before launch.
 
-## Font
+## Fonts
 
-The Portfolio uses **Futura PT** from an Adobe Fonts (Typekit) web project. That kit is domain-locked: tested in headless Chromium, it loads on `devjoshi.co.uk` and reports `wf-inactive` on `github.io` and other origins, so it can't be used here as is.
+devjoshi.co.uk uses Futura PT through an Adobe Fonts kit. Adobe's terms don't allow downloading and self-hosting those files, and that kit only loads on its own domain (checked: it loads on devjoshi.co.uk and reports inactive on github.io), so the real Futura PT can't be used here as is. Futura PT itself is a paid ParaType font with no free licence.
 
-This repo ships the supplied **Futura PT Medium** (`assets/fonts/FuturaPT-Medium.woff2`, converted from the TTF) via `@font-face`. Only that one weight was supplied, so it stands in for 300–500 and bold (700) is synthesised by the browser. The Portfolio uses lighter weights (300/400) for body text and nav, so the text here looks slightly heavier than the real site. Add `Futura PT Book/Light/Bold` files (or use the Adobe web project below) for an exact match.
-Font fallback stack: `"Futura PT", Futura, "Jost", "Century Gothic", "Avenir Next", "Trebuchet MS", sans-serif`.
+This repo uses [Jost](https://github.com/indestructible-type/Jost) (SIL Open Font License, files from `@fontsource/jost`, licence in `assets/fonts/Jost-OFL.txt`), a free Futura-style typeface. The site's weights are mapped like this: 700 for the title and credit labels, 500 for the wordmark, 400 for everything else (nav, subtitle and body). `size-adjust` in `style.css` scales each weight so the text widths match the real site to within about 1%.
 
-> Licence note: Futura PT is a commercial ParaType font (see the EULA in the font download). This repository is public; check the licence allows redistributing the web font file this way, or switch to the Adobe Fonts option below.
-
-**To get the real font through Adobe Fonts instead:** in your Adobe Fonts web project (the one with Futura PT), add `interactive.devjoshi.co.uk` and `botsmcwibe.github.io` to the project's domains, then paste the project's one-line stylesheet into `<head>` in `index.html` (before `style.css`) and remove the `@font-face` block:
-
-```html
-<link rel="stylesheet" href="https://use.typekit.net/YOUR_PROJECT_ID.css" />
-```
-
-then set the family name Adobe gives you (e.g. `futura-pt`) first in `body { font-family: … }` in `style.css`.
+To use the real Futura PT: make an Adobe Fonts web project with Futura PT, add `interactive.devjoshi.co.uk` and `botsmcwibe.github.io` to its domains, put its stylesheet link in `<head>` before `style.css`, and put the family name Adobe gives you (usually `futura-pt`) first in `font-family` in `style.css`.
 
 ## GitHub Pages
 
-1. Settings → Pages → **Deploy from a branch**, branch **main**, folder **/ (root)**.
-2. Test URL: `https://botsmcwibe.github.io/devjoshi-interactive/`.
+Settings → Pages → deploy from branch `main`, folder `/ (root)`.
 
-### Moving to interactive.devjoshi.co.uk later
+### Moving to interactive.devjoshi.co.uk
 
-1. Add a file named `CNAME` at the repo root containing exactly: `interactive.devjoshi.co.uk`
-2. DNS for `devjoshi.co.uk`: add a **CNAME** record, host `interactive`, value `botsmcwibe.github.io`.
-3. In Settings → Pages set the custom domain to `interactive.devjoshi.co.uk` and tick **Enforce HTTPS** once the certificate is issued.
+1. Add a file called `CNAME` at the repo root containing exactly `interactive.devjoshi.co.uk`.
+2. At your DNS provider add a CNAME record: host `interactive`, value `botsmcwibe.github.io`.
+3. In Settings → Pages set the custom domain to `interactive.devjoshi.co.uk` and turn on Enforce HTTPS once the certificate is issued.
 
-(The `CNAME` file is deliberately **not** committed yet: with it, GitHub redirects the `github.io` URL to a domain whose DNS isn't set up.)
+The `CNAME` file is left out for now. With it, GitHub redirects the `github.io` address to a domain that has no DNS yet.
