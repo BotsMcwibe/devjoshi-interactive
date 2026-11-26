@@ -3,6 +3,7 @@ const root = document.documentElement;
 const header = document.querySelector(".site-header");
 const menu = document.getElementById("menu");
 const menuButton = document.querySelector(".menu-button");
+const hero = document.querySelector(".hero");
 const heroStatus = document.querySelector(".hero-status");
 const canvases = document.querySelectorAll(".rive-canvas");
 const players = new Map();
@@ -35,6 +36,21 @@ function hexToRgb(hex) {
   return [n >> 16, (n >> 8) & 255, n & 255];
 }
 
+function watchSplash(canvas) {
+  const probe = document.createElement("canvas").getContext("2d", { willReadFrequently: true });
+  const started = performance.now();
+
+  const timer = setInterval(() => {
+    probe.clearRect(0, 0, 1, 1);
+    probe.drawImage(canvas, 0, 0, 1, 1, 0, 0, 1, 1);
+    const [, green] = probe.getImageData(0, 0, 1, 1).data;
+    if (green > 100 || performance.now() - started > 8000) {
+      hero.classList.add("ready");
+      clearInterval(timer);
+    }
+  }, 100);
+}
+
 function makePlayer(canvas, file) {
   const { artboard, stateMachine, animation, body, cap } = canvas.dataset;
 
@@ -50,7 +66,10 @@ function makePlayer(canvas, file) {
       player.resizeDrawingSurfaceToCanvas();
       if (body) player.viewModelInstance.color("bodyColor").rgb(...hexToRgb(body));
       if (cap) player.viewModelInstance.color("capColour").rgb(...hexToRgb(cap));
-      if (artboard === "PLAY") heroStatus.classList.add("hidden");
+      if (artboard === "PLAY") {
+        heroStatus.classList.add("hidden");
+        watchSplash(canvas);
+      }
     },
     onLoadError() {
       if (artboard === "PLAY") showError("Don't Pick On Me couldn't load. Try refreshing the page.");

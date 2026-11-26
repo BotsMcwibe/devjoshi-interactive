@@ -108,6 +108,12 @@ ul {
   color: #282828;
 }
 
+.logo svg {
+  height: 1.04em;
+  vertical-align: -0.26em;
+  fill: currentColor;
+}
+
 .logo a:hover {
   color: #25ea95;
 }
@@ -178,6 +184,11 @@ ul {
   position: relative;
   overflow: hidden;
   aspect-ratio: 2 / 1;
+  background: #000;
+  transition: background-color 0.4s;
+}
+
+.hero.ready {
   background: #59e477;
 }
 
@@ -211,7 +222,7 @@ ul {
   text-align: center;
   font-size: 16px;
   line-height: 20px;
-  color: #1b6b2f;
+  color: #999;
 }
 
 .hero-status.hidden {
@@ -220,8 +231,8 @@ ul {
 
 .details {
   display: grid;
-  grid-template-columns: minmax(0, 700px) minmax(0, 1fr);
-  gap: 40px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: center;
   padding: 90px 0 40px;
 }
 
@@ -265,8 +276,9 @@ ul {
 }
 
 .tile-square {
-  max-width: 400px;
+  width: 50%;
   aspect-ratio: 1 / 1;
+  margin: 0 auto;
 }
 
 .tile-tall {
@@ -327,7 +339,7 @@ ul {
   }
 
   .tile-square {
-    max-width: none;
+    width: 70%;
   }
 
   .grid {
