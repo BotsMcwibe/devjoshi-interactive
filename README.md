@@ -32,6 +32,8 @@ python3 -m http.server 8080
 - **Description**: two equal columns on desktop like the project pages, with the text on the left and one live Shroomie centred in the right column. On mobile the Shroomie sits under the text.
 - **Row of three**: Shromp playing `PUSH 1 (Nudge)`, `PUSH 2 (Bald)` and `PUSH 3 (Cry)` in a loop.
 
+On touch screens the hero's Shroomies only die if the pointer is hovering over them when the click arrives, and a finger never hovers (Rive's touch handling also sends the exit right after the tap, so the click lands on a Shroomie that has just stopped hovering). `tapAsMouse` in `main.js` keeps Rive away from touch events on the hero and replays each tap as a mouse move, then a press 100ms later, then a mouse-out, which is the sequence a mouse produces. Swipes that start on the hero scroll the page normally.
+
 All canvases share a single download of the `.riv`, start when they scroll near the viewport and pause when they leave it.
 
 The small canvases play the linear animations (`Shromp PUSH ...`, `Shroomie IDLE / HOVER / DEATH / REGROW`) rather than each artboard's state machine, because the state machines replay the Rive watermark intro on every canvas. The Shroomie's hover and click are handled in `main.js`, and its colours come from the file's view model (`bodyColor`, `capColour`). The pinned runtime (`@rive-app/canvas@2.55.1`) still supports linear animations; its deprecation warnings are switched off in `main.js`.

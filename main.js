@@ -51,6 +51,42 @@ function watchSplash(canvas) {
   }, 100);
 }
 
+function tapAsMouse(canvas) {
+  let touch = null;
+
+  const send = (type, { x, y }) => {
+    canvas.dispatchEvent(new MouseEvent(type, { clientX: x, clientY: y, button: 0, buttons: type === "mousedown" ? 1 : 0 }));
+  };
+
+  ["touchstart", "touchmove", "touchend", "touchcancel"].forEach((type) => {
+    canvas.addEventListener(type, (e) => e.stopImmediatePropagation(), { capture: true, passive: true });
+  });
+
+  canvas.addEventListener("pointerdown", (e) => {
+    if (e.pointerType === "touch") touch = { x: e.clientX, y: e.clientY };
+  });
+
+  canvas.addEventListener("pointermove", (e) => {
+    if (touch && Math.hypot(e.clientX - touch.x, e.clientY - touch.y) > 10) touch = null;
+  });
+
+  canvas.addEventListener("pointercancel", () => {
+    touch = null;
+  });
+
+  canvas.addEventListener("pointerup", () => {
+    if (!touch) return;
+    const tap = touch;
+    touch = null;
+    send("mousemove", tap);
+    setTimeout(() => {
+      send("mousedown", tap);
+      send("mouseup", tap);
+    }, 100);
+    setTimeout(() => send("mouseout", tap), 600);
+  });
+}
+
 function makePlayer(canvas, file) {
   const { artboard, stateMachine, animation, body, cap } = canvas.dataset;
 
@@ -76,6 +112,7 @@ function makePlayer(canvas, file) {
     },
   });
 
+  if (stateMachine) tapAsMouse(canvas);
   new ResizeObserver(() => player.resizeDrawingSurfaceToCanvas()).observe(canvas);
   return player;
 }
